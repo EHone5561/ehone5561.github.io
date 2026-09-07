@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blog — EHone</title>
+<link rel="stylesheet" href="../css/main.css">
+</head>
+<body class="pg-blog">
+<div class="wrap">
+  <div class="nav">
+    <a class="brand" href="../index.html">◼︎ EHone</a>
+    <a class="back" href="../index.html">← 홈으로</a>
+  </div>
+
+  <header>
+    <div class="kicker">Journal & Blog</div>
+    <h1>Blog</h1>
+    <div class="cap">느낀 것, 생각한 것들을 적는 공간</div>
+  </header>
+
+  <div class="layout">
+    <aside class="posts">
+      <div class="ptag">— 글 목록</div>
+      <div id="list"></div>
+    </aside>
+    <article class="viewer" id="viewer">
+      <div class="empty" id="empty">목록에서 글을 골라주세요</div>
+      <div class="markdown-body" id="content" style="display:none"></div>
+    </article>
+  </div>
+
+  <footer>
+    <div class="credit">EHone & AI SUZUHA — © 2026 · Seoul, Korea</div>
+  </footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked@11/marked.min.js"></script>
+<script>
+// 글 메타 (posts.json) 로드 → 목록 렌더
+var POSTS = [];
+fetch('posts.json').then(function(r){ return r.json(); }).then(function(data){
+  POSTS = data.posts || [];
+  renderList();
+}).catch(function(){
+  // json 못 읽으면 내장 폴백 (동일한 샘플)
+  POSTS = [
+    {file:'posts/monochrome-theme.md', title:'홈페이지 작성하기', date:'2026-09-06', tag:'개발'}
+  ];
+  renderList();
+});
+
+function renderList(){
+  var box = document.getElementById('list'); box.innerHTML='';
+  POSTS.forEach(function(p,i){
+    var el=document.createElement('button');
+    el.className='post'+(i===0?' active':'');
+    el.innerHTML='<div class="ttl">'+esc(p.title)+'</div>'+
+                 '<div class="meta"><span class="tag">'+esc(p.tag||'')+'</span>'+esc(p.date||'')+'</div>';
+    el.onclick=function(){ select(i, el); };
+    box.appendChild(el);
+  });
+  if(POSTS.length){ select(0, box.querySelector('.post')); }
+}
+function select(i, el){
+  document.querySelectorAll('.post').forEach(function(x){x.classList.remove('active');});
+  el.classList.add('active');
+  openPost(POSTS[i].file);
+}
+function openPost(file){
+  var content=document.getElementById('content');
+  var empty=document.getElementById('empty');
+  fetch(file).then(function(r){ return r.text(); }).then(function(md){
+    content.innerHTML = marked.parse(md);
+    content.style.display='';
+    empty.style.display='none';
+    content.scrollTop = 0;
+    window.scrollTo({top:0, behavior:'smooth'});
+  }).catch(function(){ alert('글을 불러오지 못했습니다: '+file); });
+}
+function esc(s){ if(s==null) return ''; return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+</script>
+</body>
+</html>

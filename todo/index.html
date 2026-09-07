@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>To-do — EHone</title>
+<link rel="stylesheet" href="../css/main.css">
+</head>
+<body class="pg-todo">
+<div class="wrap">
+  <div class="nav">
+    <a class="brand" href="../index.html">◼︎ EHone </a>
+    <a class="back" href="../index.html">← 홈으로</a>
+  </div>
+
+  <header>
+    <div class="kicker">To-do / Tasks</div>
+    <h1>목표</h1>
+    <div class="cap">이번의 목표! - 할 일들을 정리한 목록</div>
+  </header>
+
+  <div class="layout">
+    <aside class="posts">
+      <div class="ptag">— To-do 목록</div>
+      <div id="list"></div>
+    </aside>
+    <article class="viewer" id="viewer">
+      <div class="empty" id="empty">목록에서 할 일 항목을 골라주세요</div>
+      <div class="markdown-body" id="content" style="display:none"></div>
+    </article>
+  </div>
+
+  <footer>
+    <div class="credit">EHone & AI SUZUHA — © 2026 · Seoul, Korea</div>
+  </footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked@11/marked.min.js"></script>
+<script>
+// 할 일 메타 (todos.json) 로드 → 목록 렌더
+var TODOS = [];
+fetch('todos.json').then(function(r){ return r.json(); }).then(function(data){
+  TODOS = data.todos || [];
+  renderList();
+}).catch(function(){
+  // json 못 읽으면 내장 폴백 (동일한 샘플)
+  TODOS = [
+    {file:'todo/홈페이지-개선.md',   title:'홈페이지 개선',    date:'2026-09-06', tag:'웹'},
+    {file:'todo/HSK5급-취득하기.md',     title:'HSK 5급 취득하기', date:'2026-09-07', tag:'취득'},
+    {file:'todo/SQLD-취득하기.md',       title:'SQLD 취득하기',     date:'2026-09-07', tag:'취득'},
+    {file:'todo/TOEIC-900점-넘기.md',    title:'TOEIC 900점 넘기', date:'2026-09-07', tag:'취득'},
+    {file:'todo/컴활1급-취득하기.md',    title:'컴활 1급 취득하기', date:'2026-09-07', tag:'취득'},
+    {file:'todo/독후감-더-많이-쓰기.md',  title:'독후감 더 많이 쓰기',date:'2026-09-07', tag:'습관'},
+    {file:'todo/게임-열심히-하기.md',    title:'게임 열심히 하기',   date:'2026-09-07', tag:'취미'}
+  ];
+  renderList();
+});
+
+function renderList(){
+  var box = document.getElementById('list'); box.innerHTML='';
+  TODOS.forEach(function(p,i){
+    var el=document.createElement('button');
+    el.className='post'+(i===0?' active':'');
+    el.innerHTML='<div class="ttl">'+esc(p.title)+'</div>'+
+                 '<div class="meta"><span class="tag">'+esc(p.tag||'')+'</span>'+esc(p.date||'')+'</div>';
+    el.onclick=function(){ select(i, el); };
+    box.appendChild(el);
+  });
+  if(TODOS.length){ select(0, box.querySelector('.post')); }
+}
+function select(i, el){
+  document.querySelectorAll('.post').forEach(function(x){x.classList.remove('active');});
+  el.classList.add('active');
+  openPost(TODOS[i].file);
+}
+function openPost(file){
+  var content=document.getElementById('content');
+  var empty=document.getElementById('empty');
+  fetch(file).then(function(r){ return r.text(); }).then(function(md){
+    content.innerHTML = marked.parse(md);
+    content.style.display='';
+    empty.style.display='none';
+    content.scrollTop = 0;
+    window.scrollTo({top:0, behavior:'smooth'});
+  }).catch(function(){ alert('글을 불러오지 못했습니다: '+file); });
+}
+function esc(s){ if(s==null) return ''; return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+</script>
+</body>
+</html>
