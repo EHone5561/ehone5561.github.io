@@ -712,7 +712,7 @@ YOU   [□1] [<b>■</b>4] [□6] [<b>■</b>7] [□<em>?</em>]
     <img class="night" src="assets/campus-night.webp" alt="" width="1671" height="941" loading="lazy">
     <div class="outro-copy">
       <div class="in">
-        <h2 id="h-contact">연락</h2>
+        <h2 id="h-contact" lang="en">Contact</h2>
         <p>프로젝트 협업 문의, 작업 의뢰, 궁금한 점은 편하게 연락 주세요.</p>
         <ul class="contact">
           <li><a href="mailto:tae1won@hanyang.ac.kr"><b>메일</b><span>tae1won@hanyang.ac.kr</span></a></li>
@@ -811,9 +811,17 @@ YOU   [□1] [<b>■</b>4] [□6] [<b>■</b>7] [□<em>?</em>]
   /* every picture slides in from alternating sides, tied to scroll */
   const sliders = [...document.querySelectorAll('.tl .shot, .photo')].map((el, i) => ({el, dir: i % 2 ? 1 : -1}));
 
+  /* a steady viewport height: on phones innerHeight changes whenever the address bar
+     shows or hides, which made the shapes and pictures jump when the scroll direction
+     flipped. The pinned stages are 100vh tall, and 100vh ignores the address bar, so
+     measure one of them instead; it still follows real resizes and rotation. */
+  const stage = hero.querySelector('.hero-stage');
+  const measure = () => stage.offsetHeight || innerHeight;
+  let VH = measure();
+
   let ticking = false;
   function frame(){
-    const vh = innerHeight, y = scrollY;
+    const vh = VH, y = scrollY;
 
     /* hero: day turns to sunset while pinned, then leaves at half the scroll speed */
     if (!reduce) {
@@ -895,7 +903,7 @@ YOU   [□1] [<b>■</b>4] [□6] [<b>■</b>7] [□<em>?</em>]
     /* timeline */
     const r = tl.getBoundingClientRect();
     const mark = vh * .62;
-    const atEnd = y + vh >= document.documentElement.scrollHeight - 4;
+    const atEnd = y + innerHeight >= document.documentElement.scrollHeight - 4;
     tl.style.setProperty('--p', (atEnd ? 1 : clamp((mark - r.top) / r.height)).toFixed(4));
     for (const li of items) {
       const d = li.querySelector('.dot').getBoundingClientRect();
@@ -911,7 +919,7 @@ YOU   [□1] [<b>■</b>4] [□6] [<b>■</b>7] [□<em>?</em>]
   }
   const req = () => { if (!ticking) { ticking = true; requestAnimationFrame(frame); } };
   addEventListener('scroll', req, {passive:true});
-  addEventListener('resize', req);
+  addEventListener('resize', () => { VH = measure(); req(); });
   frame();
   if (reduce) [...items, ...rvs, ...hls].forEach(el => el.classList.add('seen'));
   if (reduce) stops.forEach(li => li.classList.add('lit'));
