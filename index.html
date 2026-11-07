@@ -218,6 +218,14 @@ p{margin:0 0 1.1em;max-width:62ch}
 .loop .hubt{fill:#fff;font-size:12px;font-weight:800}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 0;padding:0;list-style:none}
 .chips li{padding:5px 13px;border:1px solid var(--rule);border-radius:999px;font-size:.88rem;font-weight:600;color:var(--ink-2);background:#fff}
+/* chips pop in one by one, then a highlight keeps running through them like the agent loop above */
+.js .chips li[data-rv]{transform:translate3d(0,14px,0) scale(.85)}
+.js .chips li[data-rv].seen{transform:none;animation:chipRun 7.2s var(--ease) infinite;animation-delay:calc(1.2s + var(--d) * 1.2s)}
+@keyframes chipRun{
+  0%,18%,100%{background:#fff;color:var(--ink-2);border-color:var(--rule);box-shadow:none}
+  4%,11%{background:var(--blue);color:#fff;border-color:var(--blue);box-shadow:0 8px 18px -10px rgba(37,84,232,.7)}
+}
+@media (prefers-reduced-motion:reduce){.js .chips li[data-rv].seen{animation:none}}
 .agent{margin-top:44px;padding:28px 0 0;border-top:1px solid var(--rule)}
 .agent h4{margin:0;font-size:1.4rem;font-weight:800;letter-spacing:-.02em}
 .agent h4 span{color:var(--ink-3);font-weight:600;font-size:.9rem;margin-left:8px}
@@ -523,8 +531,8 @@ p{margin:0 0 1.1em;max-width:62ch}
           <circle class="node" cx="260" cy="170" r="7"/><text x="260" y="196" text-anchor="middle">수정</text>
         </svg>
         <p>AI가 질문에 답하는 데서 그치지 않고, <strong class="hl">스스로 계획을 세우고 도구를 쓰고 결과를 보며 다음 행동을 고치는 방식</strong>에 관심이 있습니다. 연구실에서는 에이전트가 데이터베이스와 문서를 근거로 정확하게 일하도록 만드는 방법을 공부하고 있습니다.</p>
-        <ul class="chips" aria-label="함께 보는 주제">
-          <li>LLM 에이전트</li><li>Harness Engineering</li><li>Multi-Agent</li><li>RAG</li><li>Tool Use</li><li>데이터베이스</li>
+        <ul class="chips" lang="en" aria-label="Related topics">
+          <li data-rv style="--d:0">LLM Agents</li><li data-rv style="--d:1">Harness Engineering</li><li data-rv style="--d:2">Multi-Agent</li><li data-rv style="--d:3">RAG</li><li data-rv style="--d:4">Tool Use</li><li data-rv style="--d:5">Databases</li>
         </ul>
 
         <div class="agent">
