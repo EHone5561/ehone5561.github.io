@@ -7,6 +7,9 @@
 <meta name="description" content="EHone(윤태원) · 한양대학교 ERICA 인공지능학과, Database Lab 학부연구생. Agentic AI를 공부하며 만든 프로젝트 기록.">
 <link rel="preload" as="image" href="assets/campus-day.webp">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@1&display=swap&text=WhereIbuildthings.">
 <style>
 :root{
   --bg:#fbfcfe;
@@ -194,8 +197,22 @@ p{margin:0 0 1.1em;max-width:62ch}
   transform:translate3d(var(--sx,0px),0,0) rotate(var(--sr,0deg));opacity:var(--so,1);will-change:transform,opacity}
 .photo img{position:absolute;left:0;top:-12%;width:100%;height:124%;object-fit:cover;
   transform:translate3d(0,var(--py,0px),0);will-change:transform}
-.photo figcaption{position:absolute;left:14px;bottom:12px;padding:3px 10px;border-radius:6px;
-  background:rgba(255,255,255,.86);color:var(--ink-2);font-size:.78rem;font-weight:600}
+/* place caption over the corridor picture: a quiet line of serif type on a soft dusk shade */
+.photo::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,rgba(11,24,56,0) 30%,rgba(11,24,56,.38) 58%,rgba(11,24,56,.8) 100%)}
+@media (max-width:639px){.photo{aspect-ratio:4/3}}
+.photo .place{position:absolute;left:0;right:0;bottom:0;z-index:1;padding:0 clamp(18px,4.5%,36px) clamp(16px,5%,32px);color:#fff;
+  display:flex;flex-direction:column;gap:clamp(6px,1.4vw,12px);text-shadow:0 2px 18px rgba(11,24,56,.55)}
+.photo .line{font-family:"Instrument Serif",Georgia,"Times New Roman",serif;font-style:italic;font-weight:400;
+  font-size:clamp(1.7rem,6.2vw,3.1rem);line-height:1;letter-spacing:-.01em}
+.photo .where{display:flex;align-items:center;gap:10px;font-size:clamp(.8rem,2.2vw,.98rem);font-weight:600;letter-spacing:.24em;
+  color:rgba(255,255,255,.92)}
+.photo .where i{display:block;width:28px;height:1.5px;background:rgba(255,255,255,.85);transform-origin:0 50%}
+.js .photo .line[data-rv]{transform:translate3d(0,18px,0);filter:blur(6px);
+  transition:opacity 1.2s var(--ease) .2s,transform 1.4s var(--ease) .2s,filter 1.2s var(--ease) .2s}
+.js .photo .line[data-rv].seen{filter:none;transform:none}
+.js .photo .where i{transform:scaleX(0);transition:transform 1.1s var(--ease) .6s}
+.js .photo .where.seen i{transform:none}
 
 /* interest */
 .focus h3{margin:0;font-size:clamp(2.6rem,5.5vw,4rem);line-height:1.05;letter-spacing:-.035em;font-weight:800}
@@ -510,7 +527,11 @@ p{margin:0 0 1.1em;max-width:62ch}
       </div>
 
       <figure class="photo" data-parallax>
-        <img src="assets/corridor.webp" alt="햇빛이 드는 학교 건물 복도 일러스트" width="1672" height="941" loading="lazy">
+        <img src="assets/corridor.webp" alt="햇빛이 드는 융합교육관 복도 일러스트" width="1672" height="941" loading="lazy">
+        <figcaption class="place">
+          <span class="line" lang="en" data-rv>Where I build things.</span>
+          <span class="where" data-rv style="--d:3"><i aria-hidden="true"></i>융합교육관</span>
+        </figcaption>
       </figure>
     </section>
 
