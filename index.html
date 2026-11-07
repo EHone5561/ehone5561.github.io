@@ -196,12 +196,12 @@ p{margin:0 0 1.1em;max-width:62ch}
 
 .photo{position:relative;margin:48px 0 0;border-radius:18px;overflow:hidden;aspect-ratio:16/8;background:var(--wash);
   transform:translate3d(var(--sx,0px),0,0) rotate(var(--sr,0deg));opacity:var(--so,1);will-change:transform,opacity}
-.photo img{position:absolute;left:0;top:-12%;width:100%;height:124%;object-fit:cover;
+.photo img{position:absolute;left:0;top:-12%;width:100%;height:124%;object-fit:cover;object-position:50% 78%;
   transform:translate3d(0,var(--py,0px),0);will-change:transform}
 /* place caption over the corridor picture: a quiet line of serif type on a soft dusk shade */
 .photo::after{content:"";position:absolute;inset:0;pointer-events:none;
   background:linear-gradient(180deg,rgba(11,24,56,0) 30%,rgba(11,24,56,.38) 58%,rgba(11,24,56,.8) 100%)}
-@media (max-width:639px){.photo{aspect-ratio:4/3}}
+@media (max-width:639px){.photo{aspect-ratio:16/10}}
 .photo .place{position:absolute;left:0;right:0;bottom:0;z-index:1;padding:0 clamp(18px,4.5%,36px) clamp(16px,5%,32px);color:#fff;
   display:flex;flex-direction:column;gap:clamp(6px,1.4vw,12px);text-shadow:0 2px 18px rgba(11,24,56,.55)}
 .photo .line{font-family:"Instrument Serif",Georgia,"Times New Roman",serif;font-style:italic;font-weight:400;
