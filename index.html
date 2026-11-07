@@ -229,14 +229,13 @@ p{margin:0 0 1.1em;max-width:62ch}
 .loop .hubt{fill:#fff;font-size:12px;font-weight:800}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 0;padding:0;list-style:none}
 .chips li{padding:5px 13px;border:1px solid var(--rule);border-radius:999px;font-size:.88rem;font-weight:600;color:var(--ink-2);background:#fff}
-/* chips pop in one by one, then a highlight keeps running through them like the agent loop above */
+/* chips pop in one by one, and lift with a blue accent on hover */
+.chips li{cursor:default;transition:opacity .8s var(--ease) calc(var(--d,0) * 90ms),transform .5s var(--ease),
+  background .25s,color .25s,border-color .25s,box-shadow .35s var(--ease)}
 .js .chips li[data-rv]{transform:translate3d(0,14px,0) scale(.85)}
-.js .chips li[data-rv].seen{transform:none;animation:chipRun 7.2s var(--ease) infinite;animation-delay:calc(1.2s + var(--d) * 1.2s)}
-@keyframes chipRun{
-  0%,18%,100%{background:#fff;color:var(--ink-2);border-color:var(--rule);box-shadow:none}
-  4%,11%{background:var(--blue);color:#fff;border-color:var(--blue);box-shadow:0 8px 18px -10px rgba(37,84,232,.7)}
-}
-@media (prefers-reduced-motion:reduce){.js .chips li[data-rv].seen{animation:none}}
+.js .chips li[data-rv].seen{transform:none}
+.chips li:hover,.js .chips li[data-rv].seen:hover{transform:translateY(-3px);background:var(--wash);color:var(--blue-deep);
+  border-color:var(--blue);box-shadow:0 10px 20px -12px rgba(37,84,232,.55)}
 .agent{margin-top:44px;padding:28px 0 0;border-top:1px solid var(--rule)}
 .agent h4{margin:0;font-size:1.4rem;font-weight:800;letter-spacing:-.02em}
 .agent h4 span{color:var(--ink-3);font-weight:600;font-size:.9rem;margin-left:8px}
