@@ -348,18 +348,6 @@ p{margin:0 0 1.1em;max-width:62ch}
 .contact b{font-size:.82rem;color:rgba(255,255,255,.72);font-weight:700}
 .contact span{font-weight:650;color:#fff;word-break:break-all}
 
-/* ---------- portrait screens: show the whole 16:9 picture over a blurred copy of itself ---------- */
-.bd{display:none}
-@media (max-aspect-ratio:1/1){
-  .hero-stage .bd,.outro-stage .bd{display:block;filter:blur(28px) saturate(1.1) brightness(.72);transform:scale(1.25)}
-  .hero-stage img:not(.bd),.outro-stage img:not(.bd){inset:auto;left:0;top:var(--pt,17vh);height:auto;aspect-ratio:1672/941;
-    object-fit:cover;object-position:50% 50%;transform:translate3d(0,var(--iy,0px),0);
-    -webkit-mask-image:linear-gradient(180deg,transparent,#000 9%,#000 91%,transparent);
-    mask-image:linear-gradient(180deg,transparent,#000 9%,#000 91%,transparent)}
-  .outro-stage{--pt:11vh}
-}
-@media (max-aspect-ratio:1/1) and (max-height:700px){.outro-stage{--pt:4vh}}
-
 @media (prefers-reduced-motion:reduce){
   .hero{height:100vh}
   .outro{height:100vh}
@@ -376,8 +364,6 @@ p{margin:0 0 1.1em;max-width:62ch}
 <!-- hero -->
 <header class="hero" id="hero">
   <div class="hero-stage">
-    <img class="bd day" src="assets/campus-day.webp" alt="" width="1672" height="941" aria-hidden="true">
-    <img class="bd sunset" src="assets/campus-sunset.webp" alt="" width="1671" height="941" loading="lazy" aria-hidden="true">
     <img class="day" src="assets/campus-day.webp" alt="한낮의 캠퍼스 분수 광장 일러스트" width="1672" height="941">
     <img class="sunset" src="assets/campus-sunset.webp" alt="" width="1671" height="941" loading="lazy">
     <div class="hero-copy">
@@ -685,8 +671,6 @@ YOU   [□1] [<b>■</b>4] [□6] [<b>■</b>7] [□<em>?</em>]
 
 <section class="outro" id="contact" aria-labelledby="h-contact">
   <div class="outro-stage">
-    <img class="bd sunset" src="assets/campus-sunset.webp" alt="" width="1671" height="941" loading="lazy" aria-hidden="true">
-    <img class="bd night" src="assets/campus-night.webp" alt="" width="1671" height="941" loading="lazy" aria-hidden="true">
     <img class="sunset" src="assets/campus-sunset.webp" alt="" width="1671" height="941" loading="lazy">
     <img class="night" src="assets/campus-night.webp" alt="" width="1671" height="941" loading="lazy">
     <div class="outro-copy">
@@ -711,10 +695,10 @@ YOU   [□1] [<b>■</b>4] [□6] [<b>■</b>7] [□<em>?</em>]
   const ramp = (p, a, b) => clamp((p - a) / (b - a));
 
   const hero = document.getElementById('hero');
-  const days = [...hero.querySelectorAll('.day')], sunsets = [...hero.querySelectorAll('.sunset')];
+  const day = hero.querySelector('.day'), sunset = hero.querySelector('.sunset');
   const copy = hero.querySelector('.hero-copy');
   const outro = document.getElementById('contact');
-  const oSunsets = [...outro.querySelectorAll('.sunset')], oNights = [...outro.querySelectorAll('.night')], oCopy = outro.querySelector('.outro-copy');
+  const oSunset = outro.querySelector('.sunset'), oNight = outro.querySelector('.night'), oCopy = outro.querySelector('.outro-copy');
 
   /* split the intro sentence into words for the scroll fill */
   const scrub = document.querySelector('.scrub');
@@ -792,11 +776,10 @@ YOU   [□1] [<b>■</b>4] [□6] [<b>■</b>7] [□<em>?</em>]
       const hr = hero.getBoundingClientRect();
       const p = clamp(-hr.top / Math.max(1, hr.height - vh));
       const exit = clamp(vh - hr.bottom, 0, vh);
-      const so = ramp(p, .15, .85).toFixed(3);
-      sunsets.forEach(img => img.style.opacity = so);
+      sunset.style.opacity = ramp(p, .15, .85).toFixed(3);
       const z = (1.1 - p * .06 - (exit / vh) * .04).toFixed(4);
       const iy = (exit * .5).toFixed(1) + 'px';
-      [...days, ...sunsets].forEach(img => { img.style.setProperty('--z', z); img.style.setProperty('--iy', iy); });
+      [day, sunset].forEach(img => { img.style.setProperty('--z', z); img.style.setProperty('--iy', iy); });
       copy.style.setProperty('--ty', (-p * 40 - exit * .35).toFixed(1) + 'px');
       copy.style.setProperty('--to', (1 - clamp(exit / (vh * .6))).toFixed(3));
 
@@ -805,11 +788,10 @@ YOU   [□1] [<b>■</b>4] [□6] [<b>■</b>7] [□<em>?</em>]
       const enter = clamp(or.top, 0, vh);
       const q = clamp(-or.top / Math.max(1, or.height - vh));
       /* night starts while the scene is still arriving and is complete early in the pinned part */
-      const no = ramp(-or.top, -vh * .3, (or.height - vh) * .4).toFixed(3);
-      oNights.forEach(img => img.style.opacity = no);
+      oNight.style.opacity = ramp(-or.top, -vh * .3, (or.height - vh) * .4).toFixed(3);
       const oz = (1.0 + (enter / vh) * .04 + q * .06).toFixed(4);
       const oiy = (-enter * .5).toFixed(1) + 'px';
-      [...oSunsets, ...oNights].forEach(img => { img.style.setProperty('--z', oz); img.style.setProperty('--iy', oiy); });
+      [oSunset, oNight].forEach(img => { img.style.setProperty('--z', oz); img.style.setProperty('--iy', oiy); });
       oCopy.style.setProperty('--ty', (enter * .35 + (1 - q) * 40).toFixed(1) + 'px');
       oCopy.style.setProperty('--to', clamp(1 - enter / (vh * .6)).toFixed(3));
 
