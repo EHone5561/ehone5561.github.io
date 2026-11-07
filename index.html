@@ -348,6 +348,9 @@ p{margin:0 0 1.1em;max-width:62ch}
 .contact b{font-size:.82rem;color:rgba(255,255,255,.72);font-weight:700}
 .contact span{font-weight:650;color:#fff;word-break:break-all}
 
+/* portrait screens: frame the walkway on the right side of the picture */
+@media (max-aspect-ratio:1/1){.hero-stage img,.outro-stage img{object-position:80% 60%}}
+
 @media (prefers-reduced-motion:reduce){
   .hero{height:100vh}
   .outro{height:100vh}
