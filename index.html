@@ -161,17 +161,9 @@ p{margin:0 0 1.1em;max-width:62ch}
 .journey li.lit b{color:var(--blue)}
 .journey strong{display:block;margin-top:6px;font-weight:700}
 .journey li > span:last-child{display:block;color:var(--ink-2);font-size:.95rem;line-height:1.6;margin-top:2px}
-@media (max-width:639px){
-  .journey::before,.journey::after{left:7px;top:10px;bottom:10px;width:2px}
-  .journey::after{transform:scaleY(var(--jp,1))}
-}
-@media (min-width:640px){
-  .journey{grid-template-columns:repeat(3,1fr);gap:24px}
-  .journey::before,.journey::after{left:0;right:0;top:13px;height:2px}
-  .journey::after{transform:scaleX(var(--jp,1))}
-  .journey li{padding:44px 0 0}
-  .journey .stop{top:6px}
-}
+/* vertical at every width: four stops are too cramped side by side in the content column */
+.journey::before,.journey::after{left:7px;top:10px;bottom:10px;width:2px}
+.journey::after{transform:scaleY(var(--jp,1))}
 
 /* scores and certs */
 .scores{display:grid;gap:14px;margin-top:16px}
@@ -452,24 +444,30 @@ p{margin:0 0 1.1em;max-width:62ch}
   <main id="content">
     <section id="about" class="intro" aria-labelledby="h-about">
       <h2 id="h-about">안녕하세요, <span>윤태원</span>입니다.</h2>
-      <p class="big scrub">중학교 2학년 때 C언어를 독학하며 개발자를 꿈꿨고, 지금은 한양대학교 ERICA 인공지능학과에서 AI를 공부하고 있습니다. AI를 활용한 콘텐츠를 기획하고 개발하며, 학부연구생으로 연구에도 참여하고 있습니다.</p>
+      <p class="big scrub">한양대학교 ERICA 인공지능학과에서 AI를 공부하고 있습니다. AI를 활용한 콘텐츠를 기획하고 개발하며, 학부연구생으로 연구에도 참여하고 있습니다.</p>
       <p data-rv>LLM과 머신러닝을 배우면서 C, Python, Java, 웹 같은 기초 개발 실력을 함께 다지고 있습니다. <strong class="hl">소프트웨어 및 시스템을 개발하는 것</strong>에 흥미가 있습니다.</p>
 
       <h3 class="sub" data-rv>걸어온 길</h3>
       <ol class="journey" id="journey">
         <li data-rv style="--d:0">
           <span class="stop" aria-hidden="true"></span>
+          <b>2018</b>
+          <strong>C언어 독학 시작</strong>
+          <span>중학교 2학년 때 C언어를 혼자 공부하며 개발자를 꿈꾸기 시작했습니다.</span>
+        </li>
+        <li data-rv style="--d:1">
+          <span class="stop" aria-hidden="true"></span>
           <b>2023</b>
           <strong>인공지능학과 입학</strong>
           <span>Python을 시작으로 알고리즘, 웹, 앱 개발에 집중했습니다.</span>
         </li>
-        <li data-rv style="--d:1">
+        <li data-rv style="--d:2">
           <span class="stop" aria-hidden="true"></span>
           <b>2024–25</b>
           <strong>사회복무요원 복무 완료</strong>
           <span>사회복무요원으로 복무를 마쳤고, 이 기간에 일본어 공부와 개발을 꾸준히 병행했습니다.</span>
         </li>
-        <li data-rv style="--d:2">
+        <li data-rv style="--d:3">
           <span class="stop" aria-hidden="true"></span>
           <b>2026</b>
           <strong>복학 · Database Lab</strong>
