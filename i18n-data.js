@@ -100,7 +100,7 @@ window.I18N = {
   "머신러닝 개론": "Intro to ML",
   "데이터 분석": "Data analysis",
   "실습 과목": "Lab course",
-  "{ \"week\": 3, \"topic\": \"모델 평가\", \"source\": \"DB\" }": "{ \"week\": 3,\n  \"topic\": \"Evaluation\",\n  \"source\": \"DB\" }",
+  "{ \"week\": 3, \"topic\": \"모델 평가\", \"source\": \"DB\" }": "{ \"week\": 3,\n  \"topic\": \"Metrics\",\n  \"source\": \"DB\" }",
   "3 · 문서": "3 · Docs",
   "<span>Agent</span>3주차 실습은 근거 점수가 낮아요. 어떤 실습을 넣을까요?": "<span>Agent</span>Week 3's lab has a low evidence score. Which lab should I add?",
   "Python 실습으로 채워 줘": "Fill it with a Python lab",
