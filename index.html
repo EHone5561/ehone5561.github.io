@@ -920,12 +920,21 @@ YOU   [□1] [<b>■</b>4] [□6] [<b>■</b>7] [□<em>?</em>]
       const run = document.createElementNS(RNS, 'path'); run.setAttribute('class', 'run' + (cls ? ' ' + cls : '')); run.setAttribute('d', d); run.setAttribute('pathLength', '1');
       rsvg.append(trk, run); lines.push(run);
     };
-    /* the trunk carries straight on, then each branch peels off and bends to its own column */
+    /* the trunk carries straight on; each branch leaves it at right angles with rounded
+       corners, like nested rounded rectangles: the farther its column, the higher it splits,
+       so the horizontal runs stack at even steps and never cross another branch */
     add(`M${sx} 0 L${sx} ${H}`);
-    ends.forEach((f, i) => {
-      const ex = W * f; if (Math.abs(ex - sx) < 24) return;
-      const split = H * (.12 + (i % 3) * .1);
-      add(`M${sx} ${split} C${sx} ${split + H * .28} ${ex} ${H * .45} ${ex} ${H}`, i % 2 ? 'thin' : '');
+    const r = Math.min(18, H * .06);
+    const cols = ends.map(f => W * f).filter(ex => Math.abs(ex - sx) >= 24);
+    const sides = [cols.filter(ex => ex < sx), cols.filter(ex => ex > sx)];
+    const steps = Math.max(...sides.map(a => a.length), 1);
+    const levelOf = k => H * (.14 + (.5 * k) / Math.max(1, steps - 1 || 1));
+    sides.forEach(side => {
+      side.sort((a, b) => Math.abs(b - sx) - Math.abs(a - sx));   /* farthest first */
+      side.forEach((ex, k) => {
+        const y = levelOf(k), dir = ex < sx ? -1 : 1;
+        add(`M${sx} 0 L${sx} ${y - r} Q${sx} ${y} ${sx + dir * r} ${y} L${ex - dir * r} ${y} Q${ex} ${y} ${ex} ${y + r} L${ex} ${H}`, k % 2 ? 'thin' : '');
+      });
     });
     rootLines = lines;
   }
