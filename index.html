@@ -300,6 +300,13 @@ p{margin:0 0 1.1em;max-width:62ch}
   transition:background .35s var(--ease),outline-color .35s var(--ease),border-color .35s}
 .js .tl .dot{border-color:var(--wash-2)}
 .js .tl li.on .dot{border-color:var(--blue);background:var(--blue);outline:6px solid var(--wash)}
+/* branches: from the spine, several lines fan out to each project's picture */
+.branch{position:absolute;left:-48px;top:0;width:48px;overflow:visible;pointer-events:none}
+.branch path{fill:none;stroke-linecap:round}
+.branch .trk{stroke:var(--rule);stroke-width:1.5}
+.branch .run{stroke:var(--blue);stroke-width:2;stroke-dasharray:1;stroke-dashoffset:var(--o,0)}
+.branch circle{fill:#fff;stroke:var(--wash-2);stroke-width:1.5;transition:fill .3s var(--ease),stroke .3s var(--ease)}
+.branch circle.on{fill:var(--blue);stroke:var(--blue)}
 .tl .yr{position:relative;padding:0 0 28px;margin-top:-2px}
 .tl .yr .dot{width:16px;height:16px;margin:0}
 .tl .yr b{font-size:2.2rem;font-weight:800;letter-spacing:-.04em;line-height:1;color:var(--ink)}
@@ -889,6 +896,45 @@ YOU   [□1] [<b>■</b>4] [□6] [<b>■</b>7] [□<em>?</em>]
 
   const tl = document.getElementById('timeline');
   const items = [...tl.querySelectorAll(':scope > li')];
+
+  /* branch lines from the spine to each picture, laid out from the real geometry */
+  const SVGNS = 'http://www.w3.org/2000/svg';
+  const branches = [];
+  items.forEach(li => {
+    const shot = li.querySelector('.shot');
+    if (!shot) return;
+    const svg = document.createElementNS(SVGNS, 'svg');
+    svg.setAttribute('class', 'branch');
+    svg.setAttribute('aria-hidden', 'true');
+    const lines = [0, 1, 2].map(() => {
+      const trk = document.createElementNS(SVGNS, 'path'); trk.setAttribute('class', 'trk');
+      const run = document.createElementNS(SVGNS, 'path'); run.setAttribute('class', 'run'); run.setAttribute('pathLength', '1');
+      const end = document.createElementNS(SVGNS, 'circle'); end.setAttribute('r', '3');
+      svg.append(trk, run, end);
+      return {trk, run, end, sy: 0, ty: 0};
+    });
+    li.prepend(svg);
+    branches.push({li, shot, svg, lines});
+  });
+  function topIn(el, root){ let y = 0; for (let n = el; n && n !== root; n = n.offsetParent) y += n.offsetTop; return y; }
+  function layoutBranches(){
+    for (const b of branches) {
+      const h = b.li.offsetHeight, top = topIn(b.shot, b.li), sh = b.shot.offsetHeight;
+      b.svg.setAttribute('height', h);
+      b.svg.setAttribute('viewBox', `0 0 48 ${h}`);
+      const targets = [top + Math.min(18, sh * .12), top + sh / 2, top + sh - Math.min(18, sh * .12)];
+      b.lines.forEach((L, i) => {
+        L.ty = targets[i];
+        L.sy = Math.max(18, L.ty - 34 - i * 10);
+        const d = `M16 ${L.sy} C16 ${L.sy + 22} ${22} ${L.ty} 45 ${L.ty}`;
+        L.trk.setAttribute('d', d); L.run.setAttribute('d', d);
+        L.end.setAttribute('cx', 45); L.end.setAttribute('cy', L.ty);
+      });
+    }
+  }
+  layoutBranches();
+  if ('ResizeObserver' in window) { const ro = new ResizeObserver(() => { layoutBranches(); req(); }); branches.forEach(b => ro.observe(b.li)); }
+  addEventListener('load', layoutBranches);
   /* drifting shapes: spread over the whole viewport and recycled as you scroll */
   const drift = document.querySelector('.drift');
   const shapes = [];
@@ -1021,6 +1067,16 @@ YOU   [□1] [<b>■</b>4] [□6] [<b>■</b>7] [□<em>?</em>]
       const d = li.querySelector('.dot').getBoundingClientRect();
       li.classList.toggle('on', atEnd || d.top + 8 <= mark);
       if (d.top < vh * .9) li.classList.add('seen');
+    }
+
+    /* branches grow once the blue spine reaches them, and touch the picture as it lands */
+    for (const b of branches) {
+      const t = b.li.getBoundingClientRect().top;
+      for (const L of b.lines) {
+        const k = reduce || atEnd ? 1 : clamp((mark - (t + L.sy)) / (L.ty - L.sy + vh * .08));
+        L.run.style.setProperty('--o', (1 - k).toFixed(4));
+        L.end.classList.toggle('on', k >= 1);
+      }
     }
 
     /* reveals and counters */
