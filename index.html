@@ -300,13 +300,6 @@ p{margin:0 0 1.1em;max-width:62ch}
   transition:background .35s var(--ease),outline-color .35s var(--ease),border-color .35s}
 .js .tl .dot{border-color:var(--wash-2)}
 .js .tl li.on .dot{border-color:var(--blue);background:var(--blue);outline:6px solid var(--wash)}
-/* branches: from the spine, several lines fan out to each project's picture */
-.branch{position:absolute;left:-48px;top:0;width:48px;overflow:visible;pointer-events:none}
-.branch path{fill:none;stroke-linecap:round}
-.branch .trk{stroke:var(--rule);stroke-width:1.5}
-.branch .run{stroke:var(--blue);stroke-width:2;stroke-dasharray:1;stroke-dashoffset:var(--o,0)}
-.branch circle{fill:#fff;stroke:var(--wash-2);stroke-width:1.5;transition:fill .3s var(--ease),stroke .3s var(--ease)}
-.branch circle.on{fill:var(--blue);stroke:var(--blue)}
 .tl .yr{position:relative;padding:0 0 28px;margin-top:-2px}
 .tl .yr .dot{width:16px;height:16px;margin:0}
 .tl .yr b{font-size:2.2rem;font-weight:800;letter-spacing:-.04em;line-height:1;color:var(--ink)}
@@ -421,8 +414,16 @@ p{margin:0 0 1.1em;max-width:62ch}
 .js .tl li.seen .body{opacity:1;transform:none;filter:none}
 
 /* contact */
+/* ---------- roots: the timeline line splits and runs down into the closing scene ---------- */
+.roots{position:absolute;left:0;width:100%;z-index:1;pointer-events:none;overflow:hidden}
+.roots svg{display:block;width:100%;height:100%;overflow:visible}
+.roots path{fill:none;stroke-linecap:round}
+.roots .trk{stroke:var(--rule);stroke-width:1.5}
+.roots .run{stroke:var(--blue);stroke-width:2;stroke-dasharray:1;stroke-dashoffset:var(--o,1)}
+.roots .run.thin{stroke-width:1.5;opacity:.7}
+
 /* ---------- outro: sunset turns to night, mirror of the hero ---------- */
-.outro{position:relative;z-index:2;height:180vh;margin-top:40px;padding:0 !important;background:var(--navy)}
+.outro{position:relative;z-index:2;height:180vh;margin-top:clamp(220px,34vh,360px);padding:0 !important;background:var(--navy)}
 .outro-stage{position:sticky;top:0;height:100vh;overflow:hidden}
 .outro-stage img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:38% 60%;
   transform:translate3d(0,var(--iy,0px),0) scale(var(--z,1.04));transform-origin:50% 70%;will-change:transform,opacity}
@@ -810,6 +811,7 @@ YOU   [□1] [<b>■</b>4] [□6] [<b>■</b>7] [□<em>?</em>]
   </main>
 </div>
 
+<div class="roots" id="roots" aria-hidden="true"><svg></svg></div>
 <section class="outro" id="contact" aria-labelledby="h-contact">
   <div class="outro-stage">
     <img class="sunset" src="assets/campus-sunset.webp" alt="" width="1671" height="941" loading="lazy">
@@ -897,44 +899,40 @@ YOU   [□1] [<b>■</b>4] [□6] [<b>■</b>7] [□<em>?</em>]
   const tl = document.getElementById('timeline');
   const items = [...tl.querySelectorAll(':scope > li')];
 
-  /* branch lines from the spine to each picture, laid out from the real geometry */
-  const SVGNS = 'http://www.w3.org/2000/svg';
-  const branches = [];
-  items.forEach(li => {
-    const shot = li.querySelector('.shot');
-    if (!shot) return;
-    const svg = document.createElementNS(SVGNS, 'svg');
-    svg.setAttribute('class', 'branch');
-    svg.setAttribute('aria-hidden', 'true');
-    const lines = [0, 1, 2].map(() => {
-      const trk = document.createElementNS(SVGNS, 'path'); trk.setAttribute('class', 'trk');
-      const run = document.createElementNS(SVGNS, 'path'); run.setAttribute('class', 'run'); run.setAttribute('pathLength', '1');
-      const end = document.createElementNS(SVGNS, 'circle'); end.setAttribute('r', '3');
-      svg.append(trk, run, end);
-      return {trk, run, end, sy: 0, ty: 0};
+  /* roots: below the last project the line splits into several branches that run
+     down the page and reach the closing scene; laid out from the real positions */
+  const roots = document.getElementById('roots'), rsvg = roots.querySelector('svg');
+  const RNS = 'http://www.w3.org/2000/svg';
+  let rootLines = [];
+  function layoutRoots(){
+    const outroEl = document.getElementById('contact');
+    const sx = tl.getBoundingClientRect().left + 16 + scrollX;
+    const top = tl.getBoundingClientRect().bottom - 10 + scrollY;
+    const bottom = outroEl.getBoundingClientRect().top + scrollY;
+    const W = document.documentElement.clientWidth, H = Math.max(40, bottom - top);
+    roots.style.top = top + 'px'; roots.style.height = H + 'px';
+    rsvg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    rsvg.innerHTML = '';
+    const ends = W < 640 ? [.12, .34, .58, .82] : [.06, .2, .34, .5, .66, .8, .94];
+    const lines = [];
+    const add = (d, cls) => {
+      const trk = document.createElementNS(RNS, 'path'); trk.setAttribute('class', 'trk'); trk.setAttribute('d', d);
+      const run = document.createElementNS(RNS, 'path'); run.setAttribute('class', 'run' + (cls ? ' ' + cls : '')); run.setAttribute('d', d); run.setAttribute('pathLength', '1');
+      rsvg.append(trk, run); lines.push(run);
+    };
+    /* the trunk carries straight on, then each branch peels off and bends to its own column */
+    add(`M${sx} 0 L${sx} ${H}`);
+    ends.forEach((f, i) => {
+      const ex = W * f; if (Math.abs(ex - sx) < 24) return;
+      const split = H * (.12 + (i % 3) * .1);
+      add(`M${sx} ${split} C${sx} ${split + H * .28} ${ex} ${H * .45} ${ex} ${H}`, i % 2 ? 'thin' : '');
     });
-    li.prepend(svg);
-    branches.push({li, shot, svg, lines});
-  });
-  function topIn(el, root){ let y = 0; for (let n = el; n && n !== root; n = n.offsetParent) y += n.offsetTop; return y; }
-  function layoutBranches(){
-    for (const b of branches) {
-      const h = b.li.offsetHeight, top = topIn(b.shot, b.li), sh = b.shot.offsetHeight;
-      b.svg.setAttribute('height', h);
-      b.svg.setAttribute('viewBox', `0 0 48 ${h}`);
-      const targets = [top + Math.min(18, sh * .12), top + sh / 2, top + sh - Math.min(18, sh * .12)];
-      b.lines.forEach((L, i) => {
-        L.ty = targets[i];
-        L.sy = Math.max(18, L.ty - 34 - i * 10);
-        const d = `M16 ${L.sy} C16 ${L.sy + 22} ${22} ${L.ty} 45 ${L.ty}`;
-        L.trk.setAttribute('d', d); L.run.setAttribute('d', d);
-        L.end.setAttribute('cx', 45); L.end.setAttribute('cy', L.ty);
-      });
-    }
+    rootLines = lines;
   }
-  layoutBranches();
-  if ('ResizeObserver' in window) { const ro = new ResizeObserver(() => { layoutBranches(); req(); }); branches.forEach(b => ro.observe(b.li)); }
-  addEventListener('load', layoutBranches);
+  layoutRoots();
+  addEventListener('load', layoutRoots);
+  if ('ResizeObserver' in window) new ResizeObserver(() => layoutRoots()).observe(document.body);
+
   /* drifting shapes: spread over the whole viewport and recycled as you scroll */
   const drift = document.querySelector('.drift');
   const shapes = [];
@@ -1069,15 +1067,13 @@ YOU   [□1] [<b>■</b>4] [□6] [<b>■</b>7] [□<em>?</em>]
       if (d.top < vh * .9) li.classList.add('seen');
     }
 
-    /* branches grow once the blue spine reaches them, and touch the picture as it lands */
-    for (const b of branches) {
-      const t = b.li.getBoundingClientRect().top;
-      for (const L of b.lines) {
-        const k = reduce || atEnd ? 1 : clamp((mark - (t + L.sy)) / (L.ty - L.sy + vh * .08));
-        L.run.style.setProperty('--o', (1 - k).toFixed(4));
-        L.end.classList.toggle('on', k >= 1);
-      }
+    /* the roots keep filling where the timeline line stops */
+    {
+      const rr = roots.getBoundingClientRect();
+      const k = reduce ? 1 : clamp((mark - rr.top) / Math.max(1, rr.height));
+      for (const L of rootLines) L.style.setProperty('--o', (1 - k).toFixed(4));
     }
+
 
     /* reveals and counters */
     for (const el of rvs) if (!el.classList.contains('seen') && el.getBoundingClientRect().top < vh * .9) el.classList.add('seen');
