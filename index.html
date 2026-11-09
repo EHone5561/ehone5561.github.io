@@ -201,7 +201,8 @@ p{margin:0 0 1.1em;max-width:62ch}
 
 /* scores and certs */
 .scores{display:grid;gap:14px;margin-top:16px}
-@media (min-width:640px){.scores{grid-template-columns:1fr 1fr}}
+@media (min-width:640px){.scores{grid-template-columns:repeat(3,1fr)}}
+@media (min-width:640px) and (max-width:1023px),(min-width:1024px) and (max-width:1180px){.score{padding:18px 16px}.score .v b{font-size:2.5rem}}
 .score{padding:20px 22px;border:1px solid var(--rule);border-radius:16px;background:#fff}
 .score .k{font-weight:700;color:var(--ink-3);font-size:.9rem}
 .score .v{display:flex;align-items:baseline;gap:8px;margin-top:4px}
@@ -562,13 +563,18 @@ p{margin:0 0 1.1em;max-width:62ch}
           <span class="v"><b data-count="145">145</b><small>/ 180</small></span>
           <span class="bar" style="--f:.806"><i></i></span>
         </div>
+        <div class="score" data-rv style="--d:2">
+          <span class="k">TOPCIT · 수준 3</span>
+          <span class="v"><b data-count="590">590</b><small>/ 1000</small></span>
+          <span class="bar" style="--f:.59"><i></i></span>
+        </div>
       </div>
       <ul class="certs">
-        <li data-rv style="--d:0"><b>3수준 · 590점</b>TOPCIT</li>
-        <li data-rv style="--d:1"><b>1급</b>한국사능력검정</li>
-        <li data-rv style="--d:2"><b>2급</b>컴퓨터활용능력</li>
-        <li data-rv style="--d:3"><b>4급</b>한자능력검정</li>
-        <li data-rv style="--d:4"><b>준비 중</b>HSK 5급</li>
+        <li data-rv style="--d:0"><b>1급</b>한국사능력검정</li>
+        <li data-rv style="--d:1"><b>2급</b>컴퓨터활용능력</li>
+        <li data-rv style="--d:2"><b>4급</b>한자능력검정</li>
+        <li data-rv style="--d:3"><b>준비 중</b>HSK 5급</li>
+        <li data-rv style="--d:4"><b>참여</b>피지컬 AI 부트캠프</li>
         <li data-rv style="--d:5"><b>참여</b>데이터 핸들링 공모전</li>
         <li data-rv style="--d:6"><b>참여</b>Unity 부트캠프</li>
       </ul>
